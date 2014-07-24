@@ -6,6 +6,10 @@ var currentTime = new Date();
 var year = currentTime.getFullYear();
 var month = currentTime.getMonth() + 1;
 var day = currentTime.getDate();
+var workingDate = year+""+month+""+day;
+var today = workingDate.toString();
+
+console.log(today);
 
 var mountainView = Map.createAnnotation({
     latitude:37.390749,
@@ -15,25 +19,6 @@ var mountainView = Map.createAnnotation({
     pincolor:Map.ANNOTATION_RED,
     myid:1
 });
-
-var currentLocation = Map.createAnnotation({
-	latitude:null,
-	longitude:null,
-	title:null,
-	subtitle:null,
-	pincolor:Map.ANNOTATION_RED,
-	myid:2
-});
-
-var makingPins = function(e){
-	Map.createAnnotation({
-	    latitude:37.390749,
-	    longitude:-122.081651,
-	    title:"Appcelerator Headquarters",
-	    subtitle:'Mountain View, CA',
-	    pincolor:Map.ANNOTATION_RED 
-	});
-};
 
 var mapview = Map.createView({
     mapType: Map.NORMAL_TYPE,
@@ -84,11 +69,34 @@ var getCoords = function(){
 };
 
 
-var url = "https://api.foursquare.com/v2/venues/search?ll=40.3142890930176,-76.6989822387695&client_id=3IDALSAWRC1OYQDFCB5SMTJEQ4NKPJWDGLYWX1HRQQGPSGIW&client_secret=IKQNC01TZRJRKWWZFELXJS0ETSVQPDIHGUJ1D2JFHBN43Z3P&v=" + year+""+month+""+day;
+var url = "https://api.foursquare.com/v2/venues/search?ll=40.3142890930176,-76.6989822387695&client_id=3IDALSAWRC1OYQDFCB5SMTJEQ4NKPJWDGLYWX1HRQQGPSGIW&client_secret=IKQNC01TZRJRKWWZFELXJS0ETSVQPDIHGUJ1D2JFHBN43Z3P&v=20140724";
+
+console.log(url);
 
 var remoteResponse = function(e){
 	var json = JSON.parse(this.responseText);
+	
+	for(i = 0;i < 29; i++){
+		var placesLat = json.response.venues[i].location.lat;
+		var placesLng = json.response.venues[i].location.lng;
+		var placesTitle = json.response.venues[i].name;
+		var placesSubtitle = json.response.venues[i].location.formattedAddress;
+		var booster = i+2;
+		
+		var makingPins = Map.createAnnotation({
+			    latitude:placesLat,
+			    longitude:placesLng,
+			    title:placesTitle,
+			    subtitle:placesSubtitle,
+			    pincolor:Map.ANNOTATION_RED,
+			    myid:i 
+			});
+		mapview.annotations.push(makingPins);
+		console.log(makingPins.myid);
+		console.log(mapview.annotations.length);
 	};
+
+};
 
 var remoteError = function(e){
 	Ti.API.debug("Status: " + this.status);
@@ -106,6 +114,5 @@ var xhr = Ti.Network.createHTTPClient({
 xhr.open("GET", url);
 xhr.send();
 
-console.log(currentLocation.title);
 getCoords();
 win.open();
