@@ -11,30 +11,7 @@ var today = workingDate.toString();
 
 console.log(today);
 
-var mountainView = Map.createAnnotation({
-    latitude:37.390749,
-    longitude:-122.081651,
-    title:"Appcelerator Headquarters",
-    subtitle:'Mountain View, CA',
-    pincolor:Map.ANNOTATION_RED,
-    myid:1
-});
 
-var mapview = Map.createView({
-    mapType: Map.NORMAL_TYPE,
-    region: {latitude:33.74511, longitude:-84.38993,
-            latitudeDelta:0.01, longitudeDelta:0.01},
-    animate:true,
-    regionFit:true,
-    userLocation:true,
-    annotations:[mountainView]
-});
-
-win.add(mapview);
-// Handle click events on any annotations on this map.
-mapview.addEventListener('click', function(evt) {
-    Ti.API.info("Annotation " + evt.title + " clicked, id: " + evt.annotation.myid);
-});
 
 var url;
 
@@ -44,12 +21,13 @@ var getCoords = function(){
 	    Ti.Geolocation.accuracy = Ti.Geolocation.ACCURACY_BEST;
 	    Ti.Geolocation.distanceFilter = 10;
 	    Ti.Geolocation.preferredProvider = Ti.Geolocation.PROVIDER_GPS;
+	    
+	    var storedCoords = [];
 	 
 	    Ti.Geolocation.addEventListener('location', function(e) {
 	        if (e.error) {
 	            alert('Error: ' + e.error);
 	        } else {
-	           mapview.region = e.coords;
 	           Ti.Geolocation.reverseGeocoder(e.coords.latitude, e.coords.longitude, function(z){
 	           		var currentLocation = Map.createAnnotation({
 					latitude:e.coords.latitude,
@@ -59,10 +37,52 @@ var getCoords = function(){
 					pincolor:Map.ANNOTATION_RED,
 					myid:2
 					});
-	           	mapview.annotations = [mountainView,currentLocation];
+					storedCoords.push(currentLocation);
 	           	});
-	        }
-	    });
+	           	
+	           	
+	           	var mountainView = Map.createAnnotation({
+			    latitude:37.390749,
+			    longitude:-122.081651,
+			    title:"Appcelerator Headquarters",
+			    subtitle:'Mountain View, CA',
+			    pincolor:Map.ANNOTATION_RED
+			});
+				storedCoords.push(mountainView);
+	           	
+	          	           	
+	           	var db = Ti.Database.open('geoCoords');
+	           	var dbRows = db.execute('SELECT * from coords');
+	           	var dbLat = dbRows.fieldByName('lat');
+	           	var dbLng = dbRows.fieldByName('lng');
+	           	var dbTitle = dbRows.fieldByName('title');
+	           	var dbSubtitle = dbRows.fieldByName('subtitle');
+	           	
+	           	while(dbRows.isValidRow()){
+	           	
+	           	var annotations = Map.createAnnotation({
+	           		latitude: dbLat,
+	           		longitude: dbLng,
+	           		title: dbTitle,
+	           		subtitle: dbSubtitle,
+	           		pincolor: Map.ANNOTATION_PURPLE,
+	           		animate: true
+	           	});
+	           	storedCoords.push(annotations);
+	           	dbRows.next();
+	           	
+	           	var mapview = Map.createView({
+			    mapType: Map.NORMAL_TYPE,
+			    region: e.coords,
+			    animate:true,
+			    regionFit:true,
+			    userLocation:true,
+				});
+				mapview.setAnnotations(storedCoords);
+				win.add(mapview);
+	        };
+	    }
+	});//end event listener
 		} else {
 	   		 alert('Please enable location services');
 				}
@@ -76,26 +96,24 @@ console.log(url);
 var remoteResponse = function(e){
 	var json = JSON.parse(this.responseText);
 	
-	for(i = 0;i < 29; i++){
-		var placesLat = json.response.venues[i].location.lat;
-		var placesLng = json.response.venues[i].location.lng;
-		var placesTitle = json.response.venues[i].name;
-		var placesSubtitle = json.response.venues[i].location.formattedAddress;
-		var booster = i+2;
-		
-		var makingPins = Map.createAnnotation({
-			    latitude:placesLat,
-			    longitude:placesLng,
-			    title:placesTitle,
-			    subtitle:placesSubtitle,
-			    pincolor:Map.ANNOTATION_RED,
-			    myid:i 
-			});
-		mapview.annotations.push(makingPins);
-		console.log(makingPins.myid);
-		console.log(mapview.annotations.length);
+	var db = Ti.Database.open('geoCoords');
+	var dbTableCreate = db.execute('CREATE TABLE IF NOT EXISTS coords(id INTEGER PRIMARY KEY, lat REAL, lng REAL, title TEXT, subtitle TEXT);');
+	db.close();
+	
+	for(i=0;i<29;i++){ 
+	var placesLat = json.response.venues[i].location.lat;
+	var placesLng = json.response.venues[i].location.lng;
+	var placesTitle = json.response.venues[i].name;
+	var placesSubtitle = json.response.venues[i].location.city;
+	
+		if(Ti.Network.online){
+			var db = Ti.Database.open('geoCoords');
+			var insertRows = db.execute('INSERT INTO coords (lat,lng,title,subtitle) VALUES (?,?,?,?)', placesLat, placesLng, placesTitle, placesSubtitle);
+			var lastRow = db.lastInsertRowId;
+			console.log(lastRow);
+			db.close();
+		};
 	};
-
 };
 
 var remoteError = function(e){
