@@ -78,7 +78,6 @@ var getCoords = function(){
 	           	});
 	        }
 	    });
-	    exports.getCoords = getCoordsCode;
 		} else {
 	   		 alert('Please enable location services');
 				}
@@ -86,7 +85,6 @@ var getCoords = function(){
 
 
 var url = "https://api.foursquare.com/v2/venues/search?ll=40.3142890930176,-76.6989822387695&client_id=3IDALSAWRC1OYQDFCB5SMTJEQ4NKPJWDGLYWX1HRQQGPSGIW&client_secret=IKQNC01TZRJRKWWZFELXJS0ETSVQPDIHGUJ1D2JFHBN43Z3P&v=" + year+""+month+""+day;
-console.log(exports.getCoords);
 
 var remoteResponse = function(e){
 	var json = JSON.parse(this.responseText);
