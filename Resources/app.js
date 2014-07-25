@@ -9,12 +9,6 @@ var day = currentTime.getDate();
 var workingDate = year+""+month+""+day;
 var today = workingDate.toString();
 
-console.log(today);
-
-
-
-var url;
-
 var getCoords = function(){
 	if (Ti.Geolocation.locationServicesEnabled) {
 	    Ti.Geolocation.purpose = 'Get Current Location';
@@ -70,7 +64,7 @@ var getCoords = function(){
 	           	});
 	           	storedCoords.push(annotations);
 	           	dbRows.next();
-	           	
+	           	};
 	           	var mapview = Map.createView({
 			    mapType: Map.NORMAL_TYPE,
 			    region: e.coords,
@@ -80,7 +74,7 @@ var getCoords = function(){
 				});
 				mapview.setAnnotations(storedCoords);
 				win.add(mapview);
-	        };
+	        
 	    }
 	});//end event listener
 		} else {
@@ -90,8 +84,6 @@ var getCoords = function(){
 
 
 var url = "https://api.foursquare.com/v2/venues/search?ll=40.3142890930176,-76.6989822387695&client_id=3IDALSAWRC1OYQDFCB5SMTJEQ4NKPJWDGLYWX1HRQQGPSGIW&client_secret=IKQNC01TZRJRKWWZFELXJS0ETSVQPDIHGUJ1D2JFHBN43Z3P&v=20140724";
-
-console.log(url);
 
 var remoteResponse = function(e){
 	var json = JSON.parse(this.responseText);
@@ -110,7 +102,6 @@ var remoteResponse = function(e){
 			var db = Ti.Database.open('geoCoords');
 			var insertRows = db.execute('INSERT INTO coords (lat,lng,title,subtitle) VALUES (?,?,?,?)', placesLat, placesLng, placesTitle, placesSubtitle);
 			var lastRow = db.lastInsertRowId;
-			console.log(lastRow);
 			db.close();
 		};
 	};
