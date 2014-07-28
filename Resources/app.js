@@ -9,6 +9,9 @@ var day = currentTime.getDate();
 var workingDate = year+""+month+""+day;
 var today = workingDate.toString();
 
+
+	
+
 var getCoords = function(){
 	if (Ti.Geolocation.locationServicesEnabled) {
 	    Ti.Geolocation.purpose = 'Get Current Location';
@@ -17,48 +20,53 @@ var getCoords = function(){
 	    Ti.Geolocation.preferredProvider = Ti.Geolocation.PROVIDER_GPS;
 	    
 	    var storedCoords = [];
+	    
+	   var gpsProvider = Ti.Geolocation.Android.createLocationProvider({
+	    name: Ti.Geolocation.PROVIDER_GPS,
+	    minUpdateTime: 60, 
+	    minUpdateDistance: 100
+		});
+		
+		Ti.Geolocation.Android.addLocationProvider(gpsProvider);
+			
 	 
 	    Ti.Geolocation.addEventListener('location', function(e) {
 	        if (e.error) {
 	            alert('Error: ' + e.error);
 	        } else {
-	           Ti.Geolocation.reverseGeocoder(e.coords.latitude, e.coords.longitude, function(z){
-	           		var currentLocation = Map.createAnnotation({
-					latitude:e.coords.latitude,
-					longitude:e.coords.longitude,
-					title:z.places[0].street,
-					subtitle:z.places[0].zipcode,
-					pincolor:Map.ANNOTATION_RED,
-					myid:2
-					});
-					storedCoords.push(currentLocation);
-	           	});
-	           	
-	           	
+	        	
+	        	gpsProvider = Ti.Geolocation.Android.createLocationProvider({
+			    name: Ti.Geolocation.PROVIDER_GPS,
+			    minUpdateTime: 60, 
+			    minUpdateDistance: 100
+				});
+
+				Ti.Geolocation.Android.addLocationProvider(gpsProvider);
+	         	
 	           	var mountainView = Map.createAnnotation({
-			    latitude:37.390749,
-			    longitude:-122.081651,
-			    title:"Appcelerator Headquarters",
-			    subtitle:'Mountain View, CA',
-			    pincolor:Map.ANNOTATION_RED
+			    latitude:28.578216,
+			    longitude:-81.308165,
+			    title:"Full Sail University",
+			    subtitle:'Winter Park, FL',
+			    pincolor:Map.ANNOTATION_BLUE
 			});
 				storedCoords.push(mountainView);
 	           	
 	          	           	
 	           	var db = Ti.Database.open('geoCoords');
 	           	var dbRows = db.execute('SELECT * from coords');
-	           	var dbLat = dbRows.fieldByName('lat');
-	           	var dbLng = dbRows.fieldByName('lng');
-	           	var dbTitle = dbRows.fieldByName('title');
-	           	var dbSubtitle = dbRows.fieldByName('subtitle');
+	           
 	           	
 	           	while(dbRows.isValidRow()){
+	           		
+	           	var dbLat = dbRows.fieldByName('lat');
+	           	var dbLng = dbRows.fieldByName('lng');
+	           	var dbTitle = dbRows.fieldByName('title');	
 	           	
 	           	var annotations = Map.createAnnotation({
 	           		latitude: dbLat,
 	           		longitude: dbLng,
 	           		title: dbTitle,
-	           		subtitle: dbSubtitle,
 	           		pincolor: Map.ANNOTATION_PURPLE,
 	           		animate: true
 	           	});
@@ -74,6 +82,12 @@ var getCoords = function(){
 				});
 				mapview.setAnnotations(storedCoords);
 				win.add(mapview);
+				
+				mapview.addEventListener('click', function(evt) {
+    				var detailView = Ti.UI.createView({
+    					
+    				});
+});
 	        
 	    }
 	});//end event listener
@@ -82,27 +96,32 @@ var getCoords = function(){
 				}
 };
 
-
-var url = "https://api.foursquare.com/v2/venues/search?ll=40.3142890930176,-76.6989822387695&client_id=3IDALSAWRC1OYQDFCB5SMTJEQ4NKPJWDGLYWX1HRQQGPSGIW&client_secret=IKQNC01TZRJRKWWZFELXJS0ETSVQPDIHGUJ1D2JFHBN43Z3P&v=20140724";
+var url = "https://api.foursquare.com/v2/venues/search?ll=40.3142890930176,-76.6989822387695&client_id=3IDALSAWRC1OYQDFCB5SMTJEQ4NKPJWDGLYWX1HRQQGPSGIW&client_secret=IKQNC01TZRJRKWWZFELXJS0ETSVQPDIHGUJ1D2JFHBN43Z3P&v=20140726";
 
 var remoteResponse = function(e){
 	var json = JSON.parse(this.responseText);
 	
 	var db = Ti.Database.open('geoCoords');
-	var dbTableCreate = db.execute('CREATE TABLE IF NOT EXISTS coords(id INTEGER PRIMARY KEY, lat REAL, lng REAL, title TEXT, subtitle TEXT);');
+	var dbTableCreate = db.execute('CREATE TABLE IF NOT EXISTS coords(id INTEGER PRIMARY KEY, lat REAL, lng REAL, title TEXT);');
 	db.close();
 	
 	for(i=0;i<29;i++){ 
-	var placesLat = json.response.venues[i].location.lat;
-	var placesLng = json.response.venues[i].location.lng;
-	var placesTitle = json.response.venues[i].name;
-	var placesSubtitle = json.response.venues[i].location.city;
+		
+	if(Ti.Network.online){
+		try 
+		{var placesLat = json.response.venues[i].location.lat;
+		var placesLng = json.response.venues[i].location.lng;
+		var placesTitle = json.response.venues[i].name;
+		} catch (e){
+			alert("There was an issue pulling in " + e);
+		};
 	
-		if(Ti.Network.online){
-			var db = Ti.Database.open('geoCoords');
-			var insertRows = db.execute('INSERT INTO coords (lat,lng,title,subtitle) VALUES (?,?,?,?)', placesLat, placesLng, placesTitle, placesSubtitle);
-			var lastRow = db.lastInsertRowId;
-			db.close();
+		var db = Ti.Database.open('geoCoords');
+		var insertRows = db.execute('INSERT INTO coords (lat,lng,title) VALUES (?,?,?)', placesLat, placesLng, placesTitle);
+		var lastRow = db.lastInsertRowId;
+		
+		
+		db.close();
 		};
 	};
 };
