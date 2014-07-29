@@ -1,0 +1,11 @@
+android/ATTR_MINIFY=true
+android/ATTR_PROJECT_NAME=LearningWidgets
+android/abi=armeabi
+android/distribute_path=/Users/Jeshko/Desktop
+android/key_password=password
+android/keystore_alias=Jeshko
+android/keystore_password=password
+android/keystore_path=/Applications/keystore
+android/recent_output=/Users/Jeshko/Desktop
+android/sdk_version=2.3.3
+eclipse.preferences.version=1
