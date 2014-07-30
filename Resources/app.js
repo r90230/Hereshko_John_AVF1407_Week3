@@ -1,3 +1,7 @@
+
+var Map = require('ti.map');
+var win = Titanium.UI.createWindow();
+
 var search = Ti.UI.createTextField({
 	top: 30,
 	width: "80%",
@@ -197,3 +201,4 @@ search.addEventListener("return", searchLocation);
 
 
 getCoords();
+win.open();
