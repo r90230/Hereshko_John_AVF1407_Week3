@@ -10,12 +10,15 @@ var workingDate = year+""+month+""+day;
 var today = workingDate.toString();
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 var myCoords = [];
 
 
 
 var getCoords = function(day){
 =======
+=======
+>>>>>>> FETCH_HEAD
 
 	
 
@@ -29,7 +32,10 @@ var getCoords = function(){
 	    
 	    var storedCoords = [];
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> FETCH_HEAD
 	    
 	   var gpsProvider = Ti.Geolocation.Android.createLocationProvider({
 	    name: Ti.Geolocation.PROVIDER_GPS,
@@ -39,6 +45,9 @@ var getCoords = function(){
 		
 		Ti.Geolocation.Android.addLocationProvider(gpsProvider);
 			
+<<<<<<< HEAD
+>>>>>>> FETCH_HEAD
+=======
 >>>>>>> FETCH_HEAD
 	 
 	    Ti.Geolocation.addEventListener('location', function(e) {
@@ -46,9 +55,12 @@ var getCoords = function(){
 	            alert('Error: ' + e.error);
 	        } else {
 <<<<<<< HEAD
+<<<<<<< HEAD
 	        	var myLat = e.coords.latitude;
 	        	var myLng = e.coords.longitude;
 =======
+=======
+>>>>>>> FETCH_HEAD
 	        	
 	        	gpsProvider = Ti.Geolocation.Android.createLocationProvider({
 			    name: Ti.Geolocation.PROVIDER_GPS,
@@ -57,6 +69,9 @@ var getCoords = function(){
 				});
 
 				Ti.Geolocation.Android.addLocationProvider(gpsProvider);
+<<<<<<< HEAD
+>>>>>>> FETCH_HEAD
+=======
 >>>>>>> FETCH_HEAD
 	         	
 	           	var mountainView = Map.createAnnotation({
@@ -67,6 +82,7 @@ var getCoords = function(){
 			    pincolor:Map.ANNOTATION_BLUE
 			});
 				storedCoords.push(mountainView);
+<<<<<<< HEAD
 <<<<<<< HEAD
 				
 				var url = "https://api.foursquare.com/v2/venues/search?ll="+myLat+","+myLng+"&intent=browse&radius=800&limit=10&client_id=3IDALSAWRC1OYQDFCB5SMTJEQ4NKPJWDGLYWX1HRQQGPSGIW&client_secret=IKQNC01TZRJRKWWZFELXJS0ETSVQPDIHGUJ1D2JFHBN43Z3P&v="+today;
@@ -80,11 +96,16 @@ var getCoords = function(){
 	           	var dbRows = db.execute('SELECT * from coords');
 	            };
 =======
+=======
+>>>>>>> FETCH_HEAD
 	           	
 	          	           	
 	           	var db = Ti.Database.open('geoCoords');
 	           	var dbRows = db.execute('SELECT * from coords');
 	           
+<<<<<<< HEAD
+>>>>>>> FETCH_HEAD
+=======
 >>>>>>> FETCH_HEAD
 	           	
 	           	while(dbRows.isValidRow()){
@@ -104,7 +125,10 @@ var getCoords = function(){
 	           	dbRows.next();
 	           	};
 <<<<<<< HEAD
+<<<<<<< HEAD
 	          
+=======
+>>>>>>> FETCH_HEAD
 =======
 >>>>>>> FETCH_HEAD
 	           	var mapview = Map.createView({
@@ -119,14 +143,20 @@ var getCoords = function(){
 				
 				mapview.addEventListener('click', function(evt) {
 <<<<<<< HEAD
+<<<<<<< HEAD
     				var detailView = Ti.UI.createView({});
 				});
 =======
+=======
+>>>>>>> FETCH_HEAD
     				var detailView = Ti.UI.createView({
     					
     				});
 });
 	        
+<<<<<<< HEAD
+>>>>>>> FETCH_HEAD
+=======
 >>>>>>> FETCH_HEAD
 	    }
 	});//end event listener
@@ -136,7 +166,10 @@ var getCoords = function(){
 };
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> FETCH_HEAD
 var url = "https://api.foursquare.com/v2/venues/search?ll=40.3142890930176,-76.6989822387695&client_id=3IDALSAWRC1OYQDFCB5SMTJEQ4NKPJWDGLYWX1HRQQGPSGIW&client_secret=IKQNC01TZRJRKWWZFELXJS0ETSVQPDIHGUJ1D2JFHBN43Z3P&v=20140726";
 
 var remoteResponse = function(e){
@@ -166,6 +199,9 @@ var remoteResponse = function(e){
 		};
 	};
 };
+<<<<<<< HEAD
+>>>>>>> FETCH_HEAD
+=======
 >>>>>>> FETCH_HEAD
 
 var remoteError = function(e){
@@ -226,8 +262,13 @@ var xhr = Ti.Network.createHTTPClient({
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 getCoords(today);
 win.open();
+=======
+getCoords();
+win.open();
+>>>>>>> FETCH_HEAD
 =======
 getCoords();
 win.open();
