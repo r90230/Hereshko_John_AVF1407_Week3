@@ -116,8 +116,6 @@ var foursquareCall = function(lat,lng){
 	
 	
 	var url = "https://api.foursquare.com/v2/venues/search?ll="+lat+","+lng+"&intent=browse&radius=800&limit=10&client_id=3IDALSAWRC1OYQDFCB5SMTJEQ4NKPJWDGLYWX1HRQQGPSGIW&client_secret=IKQNC01TZRJRKWWZFELXJS0ETSVQPDIHGUJ1D2JFHBN43Z3P&v="+today;
-	
-	console.log(url);
 				
 	xhr.open("GET", url);
 	xhr.send();
@@ -183,8 +181,6 @@ var remoteResponse = function(e){
 		
 		var insertRows = db.execute('INSERT INTO coords (lat,lng,title) VALUES (?,?,?)', placesLat, placesLng, placesTitle);
 		var lastRow = db.lastInsertRowId;
-		console.log(placesLng);
-		console.log(i);
 		
 		
 		db.close();
