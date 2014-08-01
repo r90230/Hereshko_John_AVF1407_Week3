@@ -30,6 +30,8 @@ var getCoords = function(){
 	    Ti.Geolocation.distanceFilter = 20;
 	    Ti.Geolocation.preferredProvider = Ti.Geolocation.PROVIDER_GPS;
 	    
+	    win.removeAllChildren();
+	    
 	    var storedCoords = [];
 	 
 	    Ti.Geolocation.addEventListener('location', function(e) {
@@ -92,8 +94,8 @@ var getCoords = function(){
 				mapview.add(search);
 				win.add(mapview);
 				
-				mapview.addEventListener('click', function(evt) {
-    				var detailView = Ti.UI.createView({});
+				Ti.Geolocation.addEventListener('calibration', function(evt) {
+	           	storedCoords.push(annotations);
 				});
 	    }
 	});//end event listener
@@ -128,19 +130,19 @@ var searchLocation = function(){
 		var xhrGoogle = Ti.Network.createHTTPClient({
 			onload: function(e){
 				var jsonLocation = JSON.parse(this.responseText);
-				
-				var city = jsonLocation.results[0].address_components[0].long_name;
+				try
+				{var city = jsonLocation.results[0].address_components[0].long_name;
 				var state = jsonLocation.results[0].address_components[2].short_name;
 				var searchLocation = city+","+state;
 				var searchLat = jsonLocation.results[0].geometry.location.lat;
-				var searchLng = jsonLocation.results[0].geometry.location.lng;
+				var searchLng = jsonLocation.results[0].geometry.location.lng;}
+				catch(e)
+				{alert("Man, what a bummer! I had an error finding "+e.responseText+"!");};
 				
 				var url = "https://api.foursquare.com/v2/venues/search?near="+searchLocation+"&intent=browse&radius=800&limit=10&client_id=3IDALSAWRC1OYQDFCB5SMTJEQ4NKPJWDGLYWX1HRQQGPSGIW&client_secret=IKQNC01TZRJRKWWZFELXJS0ETSVQPDIHGUJ1D2JFHBN43Z3P&v="+today;
 				
 				xhr.open("GET", url);
 				xhr.send();
-				
-				mapview.region = searchLat+","+searchLng;
 				
 			},
 			onerror: remoteError,
@@ -198,6 +200,7 @@ var xhr = Ti.Network.createHTTPClient({
 
 
 search.addEventListener("return", searchLocation);
+
 
 
 getCoords();
